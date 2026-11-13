@@ -7,8 +7,6 @@ module PG
   class Connection
     getter soc : UNIXSocket | TCPSocket
     @mutex = Mutex.new
-    @connected = false
-    @established = false
 
     def initialize(host : String?, port : Int?)
       begin
@@ -22,14 +20,12 @@ module PG
         raise ConnectionError.new("Cannot establish connection", cause: e)
       end
 #      soc.read_timeout=Time::Span.new(seconds: 2)
-      @connected = true
       @soc = soc
     end
 
-    def connected
-      @connected
+    def socket
+      @soc
     end
-
 
     private def write_i32(i : Int32)
       soc.write_bytes i, IO::ByteFormat::NetworkEndian
@@ -108,6 +104,14 @@ module PG
       end
 
       yield row
+    end
+
+    def send_password(password)
+      write_chr 'p'
+      write_i32 password.bytesize + 4 + 1
+      soc << password
+      write_null
+      soc.flush
     end
 
     def send_query_message(query)

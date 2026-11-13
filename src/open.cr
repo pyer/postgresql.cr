@@ -11,36 +11,36 @@ module PG
       write_null
       soc.flush
 
+      established = false
       loop do
           response = read_byte
+          #p response.chr
+          #p established
           break if response.nil?
           # p response.chr
           case response
           when 'K' ### BackendKeyData
             backend_key_data
           when 'R' ### Authentication
-            authentication
+            authentication(password)
           when 'S' ### ParameterStatus
             parameter_status
           when 'Z' ### ReadyForQuery
             ready_for_query
-            @established = true
+            established = true
             break
           else
             raise AuthenticationError.new("Authentication error for user #{user} and database #{dbname}")
-            break
           end
       end
-      return @established 
+      return established 
     end
 
-    def established
-      @established
-    end
 
-    private def authentication
+    private def authentication(password)
       len = read_i32
       ret = read_i32
+      send_password(password)
     end
 
     private def parameter_status

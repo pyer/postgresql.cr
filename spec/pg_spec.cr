@@ -2,14 +2,14 @@
 require "minispec"
 require "../src/pg.cr"
 
-test "Default user" do
-  conn = PG.open()
+test "User spec" do
+  conn = PG.open(user: "spec", password: "spec", dbname: "specdb")
   conn.close
   refute conn.nil?
 end
 
-test "User postgres" do
-  conn = PG.open(user: "postgres")
+test "Default user" do
+  conn = PG.open()
   conn.close
   refute conn.nil?
 end

@@ -7,8 +7,8 @@ require "../src/error.cr"
 test "Close established connection" do
   conn = PG::Connection.new(host: nil, port: nil)
   refute conn.nil?
-  assert conn.connected
+  refute conn.socket.closed?
   conn.close
-  refute conn.connected
+  assert conn.socket.closed?
 end
 
