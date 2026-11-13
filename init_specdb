@@ -1,0 +1,3 @@
+#!/bin/sh
+psql -U postgres -c "CREATE USER spec PASSWORD 'spec'"
+psql -U postgres -c "CREATE DATABASE specdb OWNER spec"
